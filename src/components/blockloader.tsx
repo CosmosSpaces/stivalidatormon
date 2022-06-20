@@ -45,9 +45,9 @@ const BlockLoader = (props: Cosmos) => {
         </div>
       </div>
       <div className="flex gap-px">
-        {props.blocks?.map((block) => (
+        {props.blocks?.map((block, index) => (
           <BlockComponent
-            key={block.header.app_hash}
+            key={block?.header?.app_hash ?? index}
             fail={!checkStatus(block)}
           />
         ))}
