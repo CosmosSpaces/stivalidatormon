@@ -163,6 +163,55 @@ const agoric: Chain = {
   addr_prefix: 'agoric',
   logo: '/logos/agoric.png',
 };
+const dig: Chain = {
+  chain_name: 'dig',
+  api: 'https://api-1-dig.notional.ventures',
+  rpc: [
+    'https://rpc-1-dig.notional.ventures:443',
+    'https://rpc-1-dig.notional.ventures:443',
+  ],
+  snapshot_provider: '',
+  sdk_version: '0.44.5',
+  coin_type: '118',
+  min_tx_fee: '5000',
+  addr_prefix: 'dig',
+  logo: '/logos/dig1.png',
+  assets: [
+    {
+      base: 'udig',
+      symbol: 'DIG',
+      exponent: '6',
+      coingecko_id: 'dig-chain',
+      logo: '/logos/dig1.png',
+    },
+  ],
+};
+const evmos: Chain = {
+  chain_name: 'evmos',
+  api: [
+    'https://rest.bd.evmos.org:1317',
+    'https://evmos-api.skynetvalidators.com',
+  ],
+  rpc: [
+    'https://tendermint.bd.evmos.org:26657',
+    'https://tendermint.bd.evmos.org:26657',
+  ],
+  snapshot_provider: '',
+  sdk_version: '0.45.1',
+  coin_type: '60',
+  min_tx_fee: '3000000000000000',
+  addr_prefix: 'evmos',
+  logo: '/logos/evmos.jpeg',
+  assets: [
+    {
+      base: 'aevmos',
+      symbol: 'evmos',
+      exponent: '18',
+      coingecko_id: '',
+      logo: '/logos/evmos.jpeg',
+    },
+  ],
+};
 
 const initialState = [
   {
@@ -174,22 +223,24 @@ const initialState = [
     chain: cmdx,
   },
   {
-    operatorAddress: 'comdexvaloper16y4mtrncceq0e543cx3ylhv2m89lh98cwatsqp',
-    chain: cmdx,
+    operatorAddress: 'osmovaloper1t48236ajss9wswamwll4nj7up2gqdns52gvyaa',
+    chain: osmos,
   },
   {
-    operatorAddress: 'junovaloper175q6smvgnuec5e62rs4chnu5cs8d98q2e4l6cl',
-    chain: juno,
+    operatorAddress: 'digvaloper155yeaaum5la2p3mkhrn9nwtx7kyvn39xwlm94u',
+    chain: dig,
   },
   {
-    operatorAddress: 'cosmosvaloper1z8zjv3lntpwxua0rtpvgrcwl0nm0tltgpgs6l7',
-    chain: cosmos,
+    operatorAddress: 'evmosvaloper17z0xyw6vwjn6gqj86s3axs7mjsngdl6sncdwga',
+    chain: evmos,
   },
-  {
-    operatorAddress: 'agoricvaloper15urq2dtp9qce4fyc85m6upwm9xul3049770a06',
-    chain: agoric,
-  },
+  // {
+  //   operatorAddress: 'cosmosvaloper13p5ckpmc9g2v8ez5qsxs00wadqvcc7q0qheh26',
+  //   chain: cosmos,
+  // },
 ];
+
+// atom, nom.
 
 interface IndexProps {
   chains: Chain[];
@@ -236,6 +287,18 @@ const defaultChainState: ChainStateItem[] = [
   {
     id: 'agoric',
     chain: agoric,
+    blocks: [],
+    validators: [],
+  },
+  {
+    id: 'dig',
+    chain: dig,
+    blocks: [],
+    validators: [],
+  },
+  {
+    id: 'evmos',
+    chain: evmos,
     blocks: [],
     validators: [],
   },
