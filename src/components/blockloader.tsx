@@ -20,7 +20,7 @@ const BlockComponent = (props: BlockProps) => {
 const BlockLoader = (props: Cosmos) => {
   const checkStatus = (block: Block) => {
     return (
-      block.last_commit?.signatures.some(
+      block?.last_commit?.signatures?.some(
         (x) => x.validator_address === props.validatorAddress
       ) ?? false
     );
