@@ -4,8 +4,10 @@ import { BlockResponse } from '../model/block';
 import Chain from '../model/chain';
 import Result from '../model/result';
 import Validator from '../model/validator';
+import { ValidatorSetResponse } from '../model/validatorset';
 
 const VALIDATOR_ENDPOINT = '/staking/validators';
+const VALIDATOR_SET_ENDPOINT = '/cosmos/base/tendermint/v1beta1/validatorsets/';
 const BLOCK_ENDPOINT = '/blocks';
 const SLASHING_ENDPOINT =
   '/cosmos/slashing/v1beta1/signing_infos?pagination.limit=500';
@@ -66,7 +68,7 @@ export const getLatestBlock = async (chain: Chain): Promise<BlockResponse> => {
   return response;
 };
 
-export const blockByHeight = async (
+const blockByHeight = async (
   chain: Chain,
   height: number
 ): Promise<BlockResponse> => {
@@ -78,6 +80,8 @@ export const blockByHeight = async (
   const response: BlockResponse = await request.json();
   return response;
 };
+
+export { blockByHeight };
 
 export const useBlockByHeight = (chain: Chain, height: number) => {
   return useQuery(
@@ -95,4 +99,37 @@ export const getSlashingInfo = async (chain: Chain) => {
   );
   const response = await request.json();
   return response;
+};
+
+export const getValidatorSets = async ({
+  chain,
+  offset = '0',
+  limit = '100',
+  height = 0,
+}: {
+  chain: Chain;
+  offset?: string;
+  limit?: string;
+  height?: number;
+}) => {
+  try {
+    const req = await fetch(
+      `${
+        Array.isArray(chain.api) ? chain.api[0] : chain.api
+      }${VALIDATOR_SET_ENDPOINT}${
+        height === 0 ? 'latest' : height
+      }?pagination.limit=${limit}&pagination.offset=${offset}`
+    );
+    const res: ValidatorSetResponse = await req.json();
+    return res;
+  } catch (error) {
+    return {
+      block_height: 'ERROR',
+      validators: [],
+      pagination: {
+        next_key: null,
+        total: '0',
+      },
+    };
+  }
 };

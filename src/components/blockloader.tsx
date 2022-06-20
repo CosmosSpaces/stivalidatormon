@@ -17,7 +17,14 @@ const BlockComponent = (props: BlockProps) => {
   );
 };
 
-const BlockLoader = (props: Cosmos & { blocks?: Block[] }) => {
+const BlockLoader = (props: Cosmos) => {
+  const checkStatus = (block: Block) => {
+    return (
+      block.last_commit?.signatures.some(
+        (x) => x.validator_address === props.validatorAddress
+      ) ?? false
+    );
+  };
   return (
     <div>
       <div className="flex w-full items-center mb-4">
@@ -26,7 +33,9 @@ const BlockLoader = (props: Cosmos & { blocks?: Block[] }) => {
           {props.chainName} - {props.name}
         </p>
         <div
-          className="bg-red-200 px-1 rounded-xl h-1 w-1 ml-auto flex justify-center items-center"
+          className={`${
+            props.total === '0' ? 'bg-green-100' : 'bg-red-200'
+          } px-1 rounded-xl h-1 w-1 ml-auto flex justify-center items-center`}
           style={{ minWidth: '20px', width: 'auto', height: '20px' }}
         >
           <p className="text-center">
@@ -37,7 +46,10 @@ const BlockLoader = (props: Cosmos & { blocks?: Block[] }) => {
       </div>
       <div className="flex gap-px">
         {props.blocks?.map((block) => (
-          <BlockComponent key={block.header.app_hash} />
+          <BlockComponent
+            key={block.header.app_hash}
+            fail={!checkStatus(block)}
+          />
         ))}
       </div>
     </div>

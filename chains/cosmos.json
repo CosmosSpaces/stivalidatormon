@@ -1,7 +1,7 @@
 {
   "chain_name": "cosmos",
   "coingecko": "cosmos",
-  "api": ["https://cosmos.api.ping.pub", "https://cosmos.api.s16.ventures"],
+  "api": ["https://cosmos.api.s16.ventures"],
   "rpc": [
     "https://cosmoshub.validator.network:443",
     "https://cosmos.rpc.s16.ventures"
