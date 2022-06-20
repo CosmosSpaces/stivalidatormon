@@ -234,10 +234,10 @@ const initialState = [
     operatorAddress: 'evmosvaloper17z0xyw6vwjn6gqj86s3axs7mjsngdl6sncdwga',
     chain: evmos,
   },
-  // {
-  //   operatorAddress: 'cosmosvaloper13p5ckpmc9g2v8ez5qsxs00wadqvcc7q0qheh26',
-  //   chain: cosmos,
-  // },
+  {
+    operatorAddress: 'cosmosvaloper13p5ckpmc9g2v8ez5qsxs00wadqvcc7q0qheh26',
+    chain: cosmos,
+  },
 ];
 
 // atom, nom.
@@ -527,7 +527,9 @@ const Index = () => {
       <div className="bg-purple-300 shadow">
         <div className="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
           <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
-            <p className="text-white">last updated: {Date.now()}</p>
+            <p className="text-white">
+              last updated: {new Date().toTimeString()}
+            </p>
           </div>
         </div>
       </div>
