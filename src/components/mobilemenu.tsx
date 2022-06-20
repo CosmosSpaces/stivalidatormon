@@ -79,7 +79,7 @@ const MobileMenu = () => {
           </div>
 
           <div className="flex-shrink-0 flex items-center px-4">
-            <h1 className="text-cyan-200">CosmosSpacesValmon</h1>
+            <h1 className="text-cyan-200">Valmon</h1>
           </div>
           <nav
             className="mt-5 flex-shrink-0 h-full divide-y divide-cyan-800 overflow-y-auto"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { fromBech32, toHex } from '@cosmjs/encoding';
 import { GetStaticProps } from 'next';
+import { BarLoader } from 'react-spinners';
 
 import Card from '../components/card';
 import { getChains } from '../lib/fs';
@@ -242,20 +243,24 @@ const defaultChainState: ChainStateItem[] = [
 
 const Index = () => {
   // local state.
+  const [loadingText, setLoadingText] = useState('Loading...');
   const [chainState, setChainState] =
     useState<ChainStateItem[]>(defaultChainState);
   const [validatorsToTrack, setValidatorsToTrack] =
     useState<ValidatorTracking>();
   const [missing, setMissing] = useState<{ [key: string]: SlashInfo }>();
-  const [validatorSets, setValidatorSets] =
-    useState<{ [key: string]: ValidatorSet[] }>();
+  const [validatorSets, setValidatorSets] = useState<{
+    [key: string]: ValidatorSet[];
+  }>();
   const [init, setInit] = useState(false);
-  const [previousValidatorSets, setPreviousValidatorSets] =
-    useState<{ [key: string]: ValidatorSet[] }>();
+  const [previousValidatorSets, setPreviousValidatorSets] = useState<{
+    [key: string]: ValidatorSet[];
+  }>();
 
   // methods.
   const fetchSlashInfo = async () => {
     if (validatorsToTrack) {
+      setLoadingText('Checking slash info...');
       const promise = validatorsToTrack.map(async ({ chain }) => {
         const res: { info: SlashInfo[] } = await getSlashingInfo(chain);
         let nextMissing: { [key: string]: SlashInfo } = {};
@@ -298,6 +303,7 @@ const Index = () => {
         return false;
       });
     if (validatorsToTrack) {
+      setLoadingText('Calculating Ranking...');
       let heightsByChainName: { [chainName: string]: number } = {};
       const chains = unique(validatorsToTrack.map(({ chain }) => chain));
       const currentSetPromise = chains.map(async (chain) => {
@@ -437,7 +443,9 @@ const Index = () => {
 
   // side effects.
   useEffect(() => {
+    setLoadingText('Fetching blocks...');
     fetchBlocks().then(async (cs) => {
+      setLoadingText('Refreshing Validators...');
       await fetchAllValidators(cs);
       await fetchValidators();
     });
@@ -463,70 +471,74 @@ const Index = () => {
 
       <div className="mt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {/* <!-- Card --> */}
+          {!init ? (
+            <div className="h-96 w-full flex flex-col items-center justify-center">
+              <p className="text-white text-md mb-4">{loadingText}</p>
+              <BarLoader color="#231d4b" height={10} width={200} />
+            </div>
+          ) : null}
+          {init && validatorsToTrack ? (
+            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {validatorsToTrack.map(({ validator, chain, key: address }) => {
+                const blocks = chainState.find(
+                  (x) => x.chain.chain_name === chain.chain_name
+                )?.blocks;
+                let count: string = '0';
 
-            {init && validatorsToTrack
-              ? validatorsToTrack.map(({ validator, chain, key: address }) => {
-                  const blocks = chainState.find(
-                    (x) => x.chain.chain_name === chain.chain_name
-                  )?.blocks;
-                  let count: string = '0';
+                const check = missing
+                  ? Object.keys(missing).find((key) => key === address)
+                  : '';
 
-                  const check = missing
-                    ? Object.keys(missing).find((key) => key === address)
-                    : '';
+                if (check && missing) {
+                  count = missing[check].missed_blocks_counter;
+                }
 
-                  if (check && missing) {
-                    count = missing[check].missed_blocks_counter;
-                  }
+                const vbc = chainState.find(
+                  (x) => x.chain.chain_name === chain.chain_name
+                )?.validators;
+                const rank = vbc?.findIndex((v) => {
+                  return v.operator_address === validator.operator_address;
+                });
 
-                  const vbc = chainState.find(
-                    (x) => x.chain.chain_name === chain.chain_name
-                  )?.validators;
-                  const rank = vbc?.findIndex((v) => {
-                    return v.operator_address === validator.operator_address;
-                  });
+                let delegation = '-';
+                let twentyFourHourChange = 0;
+                const validatorSet = validatorSets?.[chain.chain_name];
+                const previousValidatorSet =
+                  previousValidatorSets?.[chain.chain_name];
 
-                  let delegation = '-';
-                  let twentyFourHourChange = 0;
-                  const validatorSet = validatorSets?.[chain.chain_name];
-                  const previousValidatorSet =
-                    previousValidatorSets?.[chain.chain_name];
+                if (rank && validatorSet?.[rank]) {
+                  delegation = parseInt(
+                    validatorSet[rank].voting_power,
+                    10
+                  ).toLocaleString('en-US');
+                }
 
-                  if (rank && validatorSet?.[rank]) {
-                    delegation = parseInt(
-                      validatorSet[rank].voting_power,
-                      10
-                    ).toLocaleString('en-US');
-                  }
+                if (
+                  rank &&
+                  validatorSet?.[rank] &&
+                  previousValidatorSet?.[rank]
+                ) {
+                  twentyFourHourChange =
+                    parseInt(validatorSet[rank].voting_power, 10) -
+                    parseInt(previousValidatorSet[rank].voting_power, 10);
+                }
 
-                  if (
-                    rank &&
-                    validatorSet?.[rank] &&
-                    previousValidatorSet?.[rank]
-                  ) {
-                    twentyFourHourChange =
-                      parseInt(validatorSet[rank].voting_power, 10) -
-                      parseInt(previousValidatorSet[rank].voting_power, 10);
-                  }
-
-                  return (
-                    <Card
-                      key={address}
-                      chainName={chain.chain_name}
-                      name={validator.description.moniker}
-                      delegation={delegation}
-                      twentyFourHourChange={twentyFourHourChange}
-                      total={count || '0'}
-                      rank={rank ? rank + 1 : 0}
-                      blocks={blocks}
-                      validatorAddress={address}
-                    />
-                  );
-                })
-              : null}
-          </div>
+                return (
+                  <Card
+                    key={address}
+                    chainName={chain.chain_name}
+                    name={validator.description.moniker}
+                    delegation={delegation}
+                    twentyFourHourChange={twentyFourHourChange}
+                    total={count || '0'}
+                    rank={rank ? rank + 1 : 0}
+                    blocks={blocks}
+                    validatorAddress={address}
+                  />
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       </div>
     </Main>

@@ -5,9 +5,9 @@ const Sidebar = () => {
   return (
     <div className="hidden lg:flex lg:w-64 lg:flex-col lg:fixed lg:inset-y-0">
       <div className="flex flex-col flex-grow bg-purple-500 pt-5 pb-4 overflow-y-auto">
-        <div className="flex items-center flex-shrink-0 px-4">
+        <div className="flex items-center flex-shrink-0 px-8">
           <img className="w-16 h-16" src="/assets/images/logo.png" alt="logo" />
-          <h1 className="text-sm text-white ml-auto">CosmosSpacesValmon</h1>
+          <h1 className="text-2xl text-white mx-auto">Valmon</h1>
         </div>
         <nav
           className="mt-5 flex-1 flex flex-col divide-y divide-y-2 divide-cyan-400 overflow-y-auto"
