@@ -548,8 +548,9 @@ const Index = () => {
       {/* <!-- Page header --> */}
       <div className="bg-purple-300 shadow">
         <div className="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
-          <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
+          <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200 w-full">
             <p className="text-white">last updated: {lastUpdateTimestamp}</p>
+            <p className="text-xs text-gray-600">v0.9beta</p>
           </div>
         </div>
       </div>

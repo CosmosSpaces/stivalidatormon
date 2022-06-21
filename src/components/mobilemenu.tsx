@@ -18,40 +18,9 @@ const MobileMenu = () => {
       role="dialog"
       aria-modal="true"
     >
-      {/* <!--
-      Off-canvas menu backdrop, show/hide based on off-canvas menu state.
-
-      Entering: "transition-opacity ease-linear duration-300"
-        From: "opacity-0"
-        To: "opacity-100"
-      Leaving: "transition-opacity ease-linear duration-300"
-        From: "opacity-100"
-        To: "opacity-0"
-    --> */}
       <div className="fixed inset-0 bg-gray-600 bg-opacity-75"></div>
-
       <div className="inset-0 flex z-40">
-        {/* <!--
-        Off-canvas menu, show/hide based on off-canvas menu state.
-
-        Entering: "transition ease-in-out duration-300 transform"
-          From: "-translate-x-full"
-          To: "translate-x-0"
-        Leaving: "transition ease-in-out duration-300 transform"
-          From: "translate-x-0"
-          To: "-translate-x-full"
-      --> */}
         <div className="relative flex-1 flex flex-col max-w-xs w-full pt-5 pb-4 bg-purple-500">
-          {/* <!--
-          Close button, show/hide based on off-canvas menu state.
-
-          Entering: "ease-in-out duration-300"
-            From: "opacity-0"
-            To: "opacity-100"
-          Leaving: "ease-in-out duration-300"
-            From: "opacity-100"
-            To: "opacity-0"
-        --> */}
           <div className="absolute top-0 right-0 -mr-12 pt-2">
             <button
               type="button"
@@ -79,7 +48,20 @@ const MobileMenu = () => {
           </div>
 
           <div className="flex-shrink-0 flex items-center px-4">
-            <h1 className="text-cyan-200">Valmon</h1>
+            <img
+              className="w-16 h-16"
+              src="/assets/images/logo.png"
+              alt="logo"
+            />
+            <h1 className="text-cyan-200 ml-4 relative">
+              Valmon
+              <span
+                style={{ fontSize: '9px' }}
+                className="text-red-500 mb-5 absolute top-0"
+              >
+                beta
+              </span>
+            </h1>
           </div>
           <nav
             className="mt-5 flex-shrink-0 h-full divide-y divide-cyan-800 overflow-y-auto"
