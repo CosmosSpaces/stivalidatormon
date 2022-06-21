@@ -13,10 +13,17 @@ const ModalEntry = () => {
   }, []);
   return (
     <ModalRelay modalRoot={modalRoot}>
-      <Modal id="test">
-        <Modal.Window>
-          <Modal.CloseIcon onClose={() => deactivate('test')} />
-          <h1>Test</h1>
+      <Modal id="test" aria-labelledby="validators-title">
+        <Modal.Window
+          className="flex text-white justify-center items-center"
+          style={{
+            height: '500px',
+            width: '80%',
+            maxWidth: '800px',
+            display: 'flex',
+          }}
+        >
+          <h1 id="validators-title">Ability to add validators coming soon!</h1>
         </Modal.Window>
         <Modal.Mask onClose={() => deactivate('test')} />
       </Modal>
