@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 
+import CosmosSpacesAd from '../components/cosmosspacesad';
 import MobileMenu from '../components/mobilemenu';
 import MobileMenuBtn from '../components/mobilemenubtn';
 import Sidebar from '../components/sidebar';
@@ -34,7 +35,12 @@ const Main = (props: { children: ReactNode }) => {
             </div>
           </div>
         </div>
-        <main className="flex-1 pb-8 bg-purple-100">{props.children}</main>
+        <main className="flex-1 pb-8 bg-purple-100">
+          {props.children}
+          <div className="mt-8">
+            <CosmosSpacesAd />
+          </div>
+        </main>
       </div>
     </div>
   );
