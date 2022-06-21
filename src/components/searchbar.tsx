@@ -1,10 +1,12 @@
 import { useState } from 'react';
 
 import { searchString } from '../lib/util';
+import useModals from '../stores/usemodals';
 import useValidators from '../stores/usevalidators';
 import MobileMenuBtn from './mobilemenubtn';
 
 const Searchbar = () => {
+  const { activate } = useModals();
   const [searchInput, setSearchInput] = useState<string>('');
   const validatorsStore = useValidators();
   return (
@@ -30,7 +32,7 @@ const Searchbar = () => {
                     validator?.chain?.chain_name.toUpperCase() ?? ''
                   )
                 ) {
-                  console.log('found');
+                  // console.log('found');
                 }
               });
             }}
@@ -79,6 +81,7 @@ const Searchbar = () => {
           <div className="ml-3 relative">
             <button
               type="button"
+              onClick={() => activate('test')}
               className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-500 hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
             >
               Add Validator

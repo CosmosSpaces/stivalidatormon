@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { sha256 } from '@cosmjs/crypto';
 import { fromBase64, fromHex, toHex, fromBech32 } from '@cosmjs/encoding';
 import RIPEMD160 from 'ripemd160';
@@ -36,4 +38,17 @@ export const consensusPubkeyToHexAddress = (
 export const searchString = (input: string, value: string) => {
   const index = value.indexOf(input);
   return index !== -1;
+};
+
+export const useEscapeHatch = (onCloseCallback: () => void) => {
+  return useEffect(() => {
+    const close = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onCloseCallback();
+      }
+    };
+    document.addEventListener('keydown', close);
+    return () => document.removeEventListener('keydown', close);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 };

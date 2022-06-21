@@ -11,3 +11,16 @@ a:hover {
 @tailwind components;
 
 @tailwind utilities;
+
+/* Modal */
+.modal {
+  @apply block;
+}
+
+.modal__window {
+  @apply h-1/2 w-1/2 bg-purple-500 rounded-xl inline-block border-cyan-400 border-2 border-solid fixed overflow-y-auto overflow-x-hidden left-2/4 top-1/2 z-50 transform -translate-x-1/2 -translate-y-1/2 md:h-auto;
+}
+
+.modal__mask {
+  @apply fixed top-0 left-0 h-full w-full z-40 bg-purple-500 bg-opacity-80;
+}

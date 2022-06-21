@@ -9,6 +9,7 @@ class MyDocument extends Document {
         <body className="bg-purple-100">
           <Main />
           <NextScript />
+          <div id="modal-root" />
         </body>
       </Html>
     );
