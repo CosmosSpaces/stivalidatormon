@@ -588,6 +588,7 @@ const Index = () => {
 
                   let delegation = '-';
                   let twentyFourHourChange = 0;
+                  let previousAddress = '';
                   const validatorSet = validatorSets?.[chain.chain_name];
                   const previousValidatorSet =
                     previousValidatorSets?.[chain.chain_name];
@@ -597,16 +598,23 @@ const Index = () => {
                       validatorSet[rank].voting_power,
                       10
                     ).toLocaleString('en-US');
+                    previousAddress = validatorSet[rank].address;
                   }
 
                   if (
                     rank &&
-                    validatorSet?.[rank] &&
-                    previousValidatorSet?.[rank]
+                    previousValidatorSet &&
+                    previousAddress &&
+                    validatorSet?.[rank]
                   ) {
-                    twentyFourHourChange =
-                      parseInt(validatorSet[rank].voting_power, 10) -
-                      parseInt(previousValidatorSet[rank].voting_power, 10);
+                    const prev = previousValidatorSet.find(
+                      ({ address: a }) => a === previousAddress
+                    );
+                    if (prev) {
+                      twentyFourHourChange =
+                        parseInt(validatorSet[rank].voting_power, 10) -
+                        parseInt(prev.voting_power, 10);
+                    }
                   }
 
                   return (
