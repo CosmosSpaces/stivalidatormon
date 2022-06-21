@@ -1,12 +1,40 @@
+import { useState } from 'react';
+
+import { searchString } from '../lib/util';
+import useValidators from '../stores/usevalidators';
 import MobileMenuBtn from './mobilemenubtn';
 
 const Searchbar = () => {
+  const [searchInput, setSearchInput] = useState<string>('');
+  const validatorsStore = useValidators();
   return (
     <>
       <MobileMenuBtn />
       <div className="flex-1 px-4 flex justify-between sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
         <div className="flex-1 flex">
-          <form className="w-full flex md:ml-0" action="#" method="GET">
+          <form
+            className="w-full flex md:ml-0"
+            action="#"
+            method="GET"
+            onSubmit={(e) => {
+              e.preventDefault();
+              validatorsStore.validators?.forEach((validator) => {
+                if (
+                  searchString(
+                    searchInput.toUpperCase(),
+                    validator?.validator?.description?.moniker.toUpperCase() ??
+                      ''
+                  ) ||
+                  searchString(
+                    searchInput.toUpperCase(),
+                    validator?.chain?.chain_name.toUpperCase() ?? ''
+                  )
+                ) {
+                  console.log('found');
+                }
+              });
+            }}
+          >
             <label htmlFor="search-field" className="sr-only">
               Search
             </label>
@@ -36,6 +64,12 @@ const Searchbar = () => {
                 className="block bg-purple-300 w-full h-full pl-8 pr-3 py-2 border-transparent text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-0 focus:border-transparent sm:text-sm"
                 placeholder="Search"
                 type="search"
+                value={searchInput}
+                onChange={(e) => {
+                  if (e.target instanceof HTMLInputElement) {
+                    setSearchInput(e.target.value);
+                  }
+                }}
               />
             </div>
           </form>

@@ -4,7 +4,12 @@ import RIPEMD160 from 'ripemd160';
 
 import { ConsensusPubkey } from '../model/validator';
 
-export function consensusPubkeyToHexAddress(consensusPubkey: ConsensusPubkey) {
+/**
+ * Credit to Ping.pub explorer for figuring out this logic.
+ */
+export const consensusPubkeyToHexAddress = (
+  consensusPubkey: ConsensusPubkey
+) => {
   let raw = null;
   if (typeof consensusPubkey === 'object') {
     if (consensusPubkey.type === 'tendermint/PubKeySecp256k1') {
@@ -26,4 +31,9 @@ export function consensusPubkeyToHexAddress(consensusPubkey: ConsensusPubkey) {
   }
   const address = toHex(raw).slice(0, 40).toUpperCase();
   return address;
-}
+};
+
+export const searchString = (input: string, value: string) => {
+  const index = value.indexOf(input);
+  return index !== -1;
+};

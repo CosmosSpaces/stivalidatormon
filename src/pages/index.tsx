@@ -21,6 +21,7 @@ import Chain from '../model/chain';
 import SlashInfo from '../model/slashinfo';
 import Validator from '../model/validator';
 import ValidatorSet from '../model/validatorset';
+import useValidators from '../stores/usevalidators';
 import { Main } from '../templates/main';
 
 // temp adding chains here for mvp.
@@ -238,6 +239,30 @@ const initialState = [
     operatorAddress: 'cosmosvaloper13p5ckpmc9g2v8ez5qsxs00wadqvcc7q0qheh26',
     chain: cosmos,
   },
+  {
+    operatorAddress: 'junovaloper1dru5985k4n5q369rxeqfdsjl8ezutch8mc6nx9',
+    chain: juno,
+  },
+  {
+    operatorAddress: 'osmovaloper1hjct6q7npsspsg3dgvzk3sdf89spmlpf6t4agt',
+    chain: osmos,
+  },
+  {
+    operatorAddress: 'agoricvaloper1upz9xpay0qx0vqealgr69ejtpzj5gskla5v0d9',
+    chain: agoric,
+  },
+  {
+    operatorAddress: 'comdexvaloper17f70yjkvmvld379904jaddx9h0f74n32pjtmp6',
+    chain: cmdx,
+  },
+  {
+    operatorAddress: 'digvaloper18yvd0x0xr3xu43qdk0ldlmzpufzrtzzxfrpjhc',
+    chain: dig,
+  },
+  {
+    operatorAddress: 'junovaloper193xl2tqh2tjkld2zv49ku5s44ee4qmgr65jcep',
+    chain: juno,
+  },
 ];
 
 // atom, nom.
@@ -252,12 +277,6 @@ interface ChainStateItem {
   blocks: Block[];
   validators: Validator[];
 }
-
-type ValidatorTracking = {
-  chain: Chain;
-  validator: Validator;
-  key: string;
-}[];
 
 const defaultChainState: ChainStateItem[] = [
   {
@@ -306,11 +325,11 @@ const defaultChainState: ChainStateItem[] = [
 
 const Index = () => {
   // local state.
+  const validatorStore = useValidators();
+  const [lastUpdateTimestamp, setLastUpdatedTimestamp] = useState<string>('-');
   const [loadingText, setLoadingText] = useState('Loading...');
   const [chainState, setChainState] =
     useState<ChainStateItem[]>(defaultChainState);
-  const [validatorsToTrack, setValidatorsToTrack] =
-    useState<ValidatorTracking>();
   const [missing, setMissing] = useState<{ [key: string]: SlashInfo }>();
   const [validatorSets, setValidatorSets] = useState<{
     [key: string]: ValidatorSet[];
@@ -322,9 +341,9 @@ const Index = () => {
 
   // methods.
   const fetchSlashInfo = async () => {
-    if (validatorsToTrack) {
+    if (validatorStore.validators) {
       setLoadingText('Checking slash info...');
-      const promise = validatorsToTrack.map(async ({ chain }) => {
+      const promise = validatorStore.validators.map(async ({ chain }) => {
         const res: { info: SlashInfo[] } = await getSlashingInfo(chain);
         let nextMissing: { [key: string]: SlashInfo } = {};
         if (res.info) {
@@ -365,10 +384,12 @@ const Index = () => {
         }
         return false;
       });
-    if (validatorsToTrack) {
+    if (validatorStore.validators) {
       setLoadingText('Calculating Ranking...');
       let heightsByChainName: { [chainName: string]: number } = {};
-      const chains = unique(validatorsToTrack.map(({ chain }) => chain));
+      const chains = unique(
+        validatorStore.validators.map(({ chain }) => chain)
+      );
       const currentSetPromise = chains.map(async (chain) => {
         let total = 0;
         let height = 0;
@@ -446,6 +467,7 @@ const Index = () => {
       });
       setPreviousValidatorSets(previousValidatorSet);
       setInit(true);
+      setLastUpdatedTimestamp(new Date().toTimeString());
     }
   };
   const setBlocksByChain = async (chainStateItem: ChainStateItem) => {
@@ -501,7 +523,7 @@ const Index = () => {
       return { chain, validator, key };
     });
     const next = await Promise.all(promise);
-    setValidatorsToTrack(next);
+    validatorStore.setValidators(next);
   };
 
   // side effects.
@@ -519,7 +541,7 @@ const Index = () => {
     fetchSlashInfo();
     fetchValidatorSets();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [validatorsToTrack?.length]);
+  }, [validatorStore.validators?.length]);
 
   return (
     <Main>
@@ -527,9 +549,7 @@ const Index = () => {
       <div className="bg-purple-300 shadow">
         <div className="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
           <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200">
-            <p className="text-white">
-              last updated: {new Date().toTimeString()}
-            </p>
+            <p className="text-white">last updated: {lastUpdateTimestamp}</p>
           </div>
         </div>
       </div>
@@ -542,66 +562,68 @@ const Index = () => {
               <BarLoader color="#231d4b" height={10} width={200} />
             </div>
           ) : null}
-          {init && validatorsToTrack ? (
+          {init && validatorStore.validators ? (
             <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {validatorsToTrack.map(({ validator, chain, key: address }) => {
-                const blocks = chainState.find(
-                  (x) => x.chain.chain_name === chain.chain_name
-                )?.blocks;
-                let count: string = '0';
+              {validatorStore.validators.map(
+                ({ validator, chain, key: address }) => {
+                  const blocks = chainState.find(
+                    (x) => x.chain.chain_name === chain.chain_name
+                  )?.blocks;
+                  let count: string = '0';
 
-                const check = missing
-                  ? Object.keys(missing).find((key) => key === address)
-                  : '';
+                  const check = missing
+                    ? Object.keys(missing).find((key) => key === address)
+                    : '';
 
-                if (check && missing) {
-                  count = missing[check].missed_blocks_counter;
+                  if (check && missing) {
+                    count = missing[check].missed_blocks_counter;
+                  }
+
+                  const vbc = chainState.find(
+                    (x) => x.chain.chain_name === chain.chain_name
+                  )?.validators;
+                  const rank = vbc?.findIndex((v) => {
+                    return v.operator_address === validator.operator_address;
+                  });
+
+                  let delegation = '-';
+                  let twentyFourHourChange = 0;
+                  const validatorSet = validatorSets?.[chain.chain_name];
+                  const previousValidatorSet =
+                    previousValidatorSets?.[chain.chain_name];
+
+                  if (rank && validatorSet?.[rank]) {
+                    delegation = parseInt(
+                      validatorSet[rank].voting_power,
+                      10
+                    ).toLocaleString('en-US');
+                  }
+
+                  if (
+                    rank &&
+                    validatorSet?.[rank] &&
+                    previousValidatorSet?.[rank]
+                  ) {
+                    twentyFourHourChange =
+                      parseInt(validatorSet[rank].voting_power, 10) -
+                      parseInt(previousValidatorSet[rank].voting_power, 10);
+                  }
+
+                  return (
+                    <Card
+                      key={address}
+                      chainName={chain.chain_name}
+                      name={validator.description.moniker}
+                      delegation={delegation}
+                      twentyFourHourChange={twentyFourHourChange}
+                      total={count || '0'}
+                      rank={rank ? rank + 1 : 0}
+                      blocks={blocks}
+                      validatorAddress={address}
+                    />
+                  );
                 }
-
-                const vbc = chainState.find(
-                  (x) => x.chain.chain_name === chain.chain_name
-                )?.validators;
-                const rank = vbc?.findIndex((v) => {
-                  return v.operator_address === validator.operator_address;
-                });
-
-                let delegation = '-';
-                let twentyFourHourChange = 0;
-                const validatorSet = validatorSets?.[chain.chain_name];
-                const previousValidatorSet =
-                  previousValidatorSets?.[chain.chain_name];
-
-                if (rank && validatorSet?.[rank]) {
-                  delegation = parseInt(
-                    validatorSet[rank].voting_power,
-                    10
-                  ).toLocaleString('en-US');
-                }
-
-                if (
-                  rank &&
-                  validatorSet?.[rank] &&
-                  previousValidatorSet?.[rank]
-                ) {
-                  twentyFourHourChange =
-                    parseInt(validatorSet[rank].voting_power, 10) -
-                    parseInt(previousValidatorSet[rank].voting_power, 10);
-                }
-
-                return (
-                  <Card
-                    key={address}
-                    chainName={chain.chain_name}
-                    name={validator.description.moniker}
-                    delegation={delegation}
-                    twentyFourHourChange={twentyFourHourChange}
-                    total={count || '0'}
-                    rank={rank ? rank + 1 : 0}
-                    blocks={blocks}
-                    validatorAddress={address}
-                  />
-                );
-              })}
+              )}
             </div>
           ) : null}
         </div>
