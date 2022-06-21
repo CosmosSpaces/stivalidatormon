@@ -42,10 +42,10 @@ const Privacy = () => {
           We want to inform you that whenever you visit our Service, we collect
           information that your browser sends to us that is called Log Data.
           This Log Data may include information such as your computer&apos;s
-          Internet Protocol (&quote;IP&quote;) address, browser version, pages
-          of our Service that you visit, the time and date of your visit, the
-          time spent on those pages, and other statistics. This is only used in
-          order to determine overall usage of the application. This currently
+          Internet Protocol (&quot;IP&quot;) address, browser version, pages of
+          our Service that you visit, the time and date of your visit, the time
+          spent on those pages, and other statistics. This is only used in order
+          to determine overall usage of the application. This currently
           isn&apos;t in place so no log data is being tracked.
         </p>
 
