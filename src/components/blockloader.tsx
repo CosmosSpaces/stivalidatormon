@@ -1,3 +1,4 @@
+import { truncate } from '../lib/util';
 import { Block } from '../model/block';
 import Cosmos from '../model/cosmo';
 
@@ -25,13 +26,15 @@ const BlockLoader = (props: Cosmos) => {
       ) ?? false
     );
   };
+  const title = truncate(`${props.chainName} - ${props.name}`, 27);
   return (
     <div>
       <div className="flex w-full items-center mb-4">
         <input type="checkbox" />
-        <p className="ml-2 text-cyan-400">
-          {props.chainName} - {props.name}
-        </p>
+        <p
+          className="ml-2 text-cyan-400"
+          dangerouslySetInnerHTML={{ __html: title }}
+        />
         <div
           className={`${
             props.total === '0' ? 'bg-green-100' : 'bg-red-200'

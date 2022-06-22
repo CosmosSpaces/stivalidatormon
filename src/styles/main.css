@@ -24,3 +24,7 @@ a:hover {
 .modal__mask {
   @apply fixed top-0 left-0 h-full w-full z-40 bg-purple-500 bg-opacity-80;
 }
+
+.modal__header {
+  @apply h-20 lg:h-48 relative flex p-4 border-2 border-solid border-gray-900 dark:border-gray-200 border-l-0 border-r-0 border-t-0 overflow-hidden;
+}

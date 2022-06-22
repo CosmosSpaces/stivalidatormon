@@ -1,10 +1,12 @@
 import Cosmos from '../model/cosmo';
+import useModals from '../stores/usemodals';
 import BlockLoader from './blockloader';
 
 const Card = (props: Cosmos) => {
+  const { activate } = useModals();
   const isNegativeChange = Math.sign(props.twentyFourHourChange) === -1;
   return (
-    <div className="bg-purple-300 overflow-hidden shadow rounded-lg">
+    <div className="bg-purple-300 overflow-hidden shadow rounded-lg flex flex-col">
       <div className="px-5 pt-5">
         <BlockLoader {...props} />
       </div>
@@ -27,12 +29,15 @@ const Card = (props: Cosmos) => {
           </p>
         </div>
       </div>
-      <div className="bg-gray-50 px-5 py-3">
+      <div className="bg-gray-50 px-5 py-3 mt-auto">
         <div className="text-sm">
-          <a href="#" className="font-medium text-cyan-700 hover:text-cyan-900">
+          <button
+            className="font-medium text-cyan-700 hover:text-cyan-900"
+            onClick={() => activate('secure-info')}
+          >
             {' '}
             View secure info{' '}
-          </a>
+          </button>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 {
   "name": "cosmos-spaces-valmon",
-  "version": "0.10.1",
+  "version": "0.11",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -17,6 +17,7 @@
     "@cosmjs/crypto": "^0.28.4",
     "@cosmjs/encoding": "^0.28.4",
     "@heroicons/react": "^1.0.6",
+    "@tailwindcss/forms": "^0.5.2",
     "next": "^12.0.10",
     "next-seo": "^5.1.0",
     "preact": "^10.7.3",
@@ -26,6 +27,7 @@
     "react-query": "^3.39.1",
     "react-spinners": "^0.12.0",
     "ripemd160": "^2.0.2",
+    "runes": "^0.4.3",
     "styled-jsx-plugin-postcss": "^4.0.1",
     "zustand": "^4.0.0-rc.1"
   },
@@ -35,6 +37,7 @@
     "@types/react": "^17.0.39",
     "@types/react-dom": "^18.0.5",
     "@types/ripemd160": "^2.0.0",
+    "@types/runes": "^0.4.1",
     "@typescript-eslint/eslint-plugin": "^5.10.2",
     "@typescript-eslint/parser": "^5.10.2",
     "autoprefixer": "^10.4.2",

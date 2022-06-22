@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { sha256 } from '@cosmjs/crypto';
 import { fromBase64, fromHex, toHex, fromBech32 } from '@cosmjs/encoding';
 import RIPEMD160 from 'ripemd160';
+import runes from 'runes';
 
 import { ConsensusPubkey } from '../model/validator';
 
@@ -51,4 +52,8 @@ export const useEscapeHatch = (onCloseCallback: () => void) => {
     return () => document.removeEventListener('keydown', close);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+};
+
+export const truncate = (str: string, n: number) => {
+  return str.length > n ? `${runes.substr(str, 0, n - 1)}&hellip;` : str;
 };
