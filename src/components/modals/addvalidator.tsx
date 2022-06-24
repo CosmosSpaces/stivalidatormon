@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import useAllChains from '../../stores/useallchains';
 import useModals from '../../stores/usemodals';
@@ -12,20 +12,21 @@ const AddValidator = (props: { id: string }) => {
   const { deactivate, activate } = useModals();
   const { chains } = useAllChains();
   const { chain: selectedChain, setSelectedChain } = useSelectedChain();
+  const effectRef = useRef(true);
+  const [isError, setIsError] = useState<boolean>(false);
   const [selectedChainOpen, setSelectedChainOpen] = useState<boolean>(false);
   const close = () => deactivate(props.id);
   const titleId = `${props.id}-title`;
 
+  useEffect(() => {
+    if (effectRef.current === true) {
+      setSelectedChain(undefined);
+      effectRef.current = false;
+    }
+  }, [setSelectedChain]);
+
   return (
-    <Modal
-      id={props.id}
-      aria-labelledby={titleId}
-      onClick={() => {
-        if (selectedChainOpen) {
-          setSelectedChainOpen(false);
-        }
-      }}
-    >
+    <Modal id={props.id} aria-labelledby={titleId}>
       <Modal.Window className="h-3/6 w-5/6 md:w-4/12">
         <div className="relative h-max">
           <div className="absolute top-3 bottom-0 right-4 z-50">
@@ -49,11 +50,14 @@ const AddValidator = (props: { id: string }) => {
                   <div className="mt-1 relative">
                     <button
                       type="button"
-                      className="relative w-full bg-white border border-gray-300 rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      className={`relative w-full bg-white border ${
+                        isError ? 'border-red-500 border-2' : 'border-gray-300'
+                      } rounded-md shadow-sm pl-3 pr-10 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
                       aria-haspopup="listbox"
                       aria-expanded="true"
                       aria-labelledby="listbox-label"
                       onClick={() => {
+                        setIsError(false);
                         setSelectedChainOpen(!selectedChainOpen);
                       }}
                     >
@@ -87,6 +91,11 @@ const AddValidator = (props: { id: string }) => {
                         </svg>
                       </span>
                     </button>
+                    {isError ? (
+                      <p className="text-red-500 text-xs font-semibold">
+                        Please select a chain to continue
+                      </p>
+                    ) : null}
                     <ul
                       className={`${
                         selectedChainOpen ? 'absolute' : 'hidden'
@@ -108,6 +117,7 @@ const AddValidator = (props: { id: string }) => {
                             aria-selected={true}
                             onClick={() => {
                               setSelectedChain(chain);
+                              setSelectedChainOpen(false);
                             }}
                           >
                             <div className="flex items-center">
@@ -150,10 +160,15 @@ const AddValidator = (props: { id: string }) => {
                 <div>
                   <button
                     type="button"
+                    disabled={!selectedChain}
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                     onClick={() => {
-                      activate(SELECT_VALIDATOR);
-                      deactivate(props.id);
+                      if (selectedChain) {
+                        activate(SELECT_VALIDATOR);
+                        deactivate(props.id);
+                      } else {
+                        setIsError(true);
+                      }
                     }}
                   >
                     Next

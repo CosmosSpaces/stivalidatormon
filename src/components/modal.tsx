@@ -87,15 +87,16 @@ const ModalWindow = ({ className, children, ...props }: DefaultDivProps) => {
 };
 Modal.Window = ModalWindow;
 
-const ModalHeader = (
-  props: DefaultDivProps & { title: string; titleId: string }
-) => {
+const ModalHeader = ({
+  titleId,
+  ...props
+}: DefaultDivProps & { title: string; titleId: string }) => {
   return (
     <header {...props} className="modal__header bg-purple-500">
       <div className="text-center w-full flex items-center justify-center z-40">
         <h1
           className="w-32 lg:w-full text-white text-lg lg:text-2xl font-medium tracking-tight"
-          id={props.titleId}
+          id={titleId}
         >
           {props.title}
         </h1>

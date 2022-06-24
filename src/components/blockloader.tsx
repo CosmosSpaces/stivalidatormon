@@ -28,7 +28,7 @@ const BlockLoader = (props: Cosmos) => {
       ) ?? false
     );
   };
-  const title = truncate(props.name, 27);
+  const title = truncate(props.name, 20);
   return (
     <div>
       <div className="flex w-full items-center mb-4">
