@@ -8,14 +8,14 @@
   "coin_type": "118",
   "min_tx_fee": "3000",
   "addr_prefix": "omniflix",
-  "logo": "/logos/omniflix.png",
+  "logo": "/assets/images/logos/omniflix.png",
   "assets": [
     {
       "base": "uflix",
       "symbol": "FLIX",
       "exponent": "6",
       "coingecko_id": "",
-      "logo": "/logos/omniflix.png"
+      "logo": "/assets/images/logos/omniflix.png"
     }
   ]
 }

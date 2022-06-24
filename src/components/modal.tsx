@@ -42,12 +42,18 @@ type CloseIconProps = {
 
 const CloseIcon = ({
   onClose,
-  svgClassName = '',
+  svgClassName = 'fill-current text-white w-6 h-6',
   svgViewBox = '0 0 18 18',
   ...props
 }: CloseIconProps) => {
   return (
-    <button type="button" onClick={onClose} aria-label="Close" {...props}>
+    <button
+      type="button"
+      className="ml-auto z-50 p-3"
+      onClick={onClose}
+      aria-label="Close"
+      {...props}
+    >
       <svg
         className={svgClassName}
         xmlns="http://www.w3.org/2000/svg"
@@ -88,7 +94,7 @@ const ModalHeader = (
     <header {...props} className="modal__header bg-purple-500">
       <div className="text-center w-full flex items-center justify-center z-40">
         <h1
-          className="w-32 lg:w-full text-white text-lg lg:text-2xl lg:text-5xl font-medium tracking-tight"
+          className="w-32 lg:w-full text-white text-lg lg:text-2xl font-medium tracking-tight"
           id={props.titleId}
         >
           {props.title}

@@ -14,9 +14,9 @@
       "symbol": "ODIN",
       "exponent": "6",
       "coingecko_id": "",
-      "logo": "/logos/odin.png"
+      "logo": "/assets/images/logos/odin.png"
     }
   ],
-  "logo": "/logos/odin.png",
+  "logo": "/assets/images/logos/odin.png",
   "sdk_version": "0.44.5"
 }

@@ -9,7 +9,7 @@
   "addr_prefix": "bitsong",
   "coin_type": "639",
   "min_tx_fee": "5000",
-  "logo": "/logos/bitsong.svg",
+  "logo": "/assets/images/logos/bitsong.svg",
   "sdk_version": "0.45.0",
   "assets": [
     {
@@ -17,7 +17,7 @@
       "symbol": "BTSG",
       "exponent": "6",
       "coingecko_id": "bitsong",
-      "logo": "/logos/bitsong.svg"
+      "logo": "/assets/images/logos/bitsong.svg"
     }
   ]
 }

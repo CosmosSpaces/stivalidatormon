@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { fromBech32, toHex } from '@cosmjs/encoding';
 import { GetStaticProps } from 'next';
@@ -6,6 +6,7 @@ import BarLoader from 'react-spinners/BarLoader';
 import PuffLoader from 'react-spinners/PuffLoader';
 
 import Card from '../components/card';
+import { ID as ADD_VALIDATOR } from '../components/modals/addvalidator';
 import { getChains } from '../lib/fs';
 import {
   blockByHeight,
@@ -15,7 +16,7 @@ import {
   getValidatorSets,
   validatorsByChain,
 } from '../lib/query';
-import useLocalValidators from '../lib/storage';
+import { useLocalValidators, usePollingInterval } from '../lib/storage';
 import { consensusPubkeyToHexAddress } from '../lib/util';
 import { Block, BlockResponse } from '../model/block';
 import Chain from '../model/chain';
@@ -24,6 +25,9 @@ import StorageItem from '../model/storageitem';
 import Validator from '../model/validator';
 import ValidatorSet from '../model/validatorset';
 import ValidatorState from '../model/validatorstate';
+import useAllChains from '../stores/useallchains';
+import useModals from '../stores/usemodals';
+import useUpdating from '../stores/useupdating';
 import useValidators from '../stores/usevalidators';
 import { Main } from '../templates/main';
 
@@ -40,9 +44,13 @@ interface ChainStateItem {
 const Index = (props: IndexProps) => {
   // local storage state.
   const { validators: localValidators } = useLocalValidators();
+  const { pollingInterval } = usePollingInterval();
   // local state.
   const validatorStore = useValidators();
-  const [isUpdating, setIsUpdating] = useState<boolean>(true);
+  const { activate } = useModals();
+  const { isUpdating, setIsUpdating } = useUpdating();
+  const allChainsRef = useRef(true);
+  const allChainsStore = useAllChains();
   const [lastUpdateTimestamp, setLastUpdatedTimestamp] = useState<string>('-');
   const [loadingText, setLoadingText] = useState('Loading...');
   const [chainState, setChainState] = useState<ChainStateItem[]>([]);
@@ -265,7 +273,6 @@ const Index = (props: IndexProps) => {
 
   // side effects.
   useEffect(() => {
-    setLoadingText('Loading config...');
     if (localValidators && isUpdating) {
       setLoadingText('Fetching blocks...');
       setup(localValidators).then(async (cs) => {
@@ -280,7 +287,9 @@ const Index = (props: IndexProps) => {
         await fetchValidatorSets(validators);
         // allow cards to display and stamp time.
         setInit(true);
-        setLastUpdatedTimestamp(new Date().toTimeString());
+        if (validators.length > 0) {
+          setLastUpdatedTimestamp(new Date().toTimeString());
+        }
         if (isUpdating) {
           setIsUpdating(false);
         }
@@ -291,18 +300,42 @@ const Index = (props: IndexProps) => {
 
   // Auto-refresh.
   useEffect(() => {
-    let refreshTimer: NodeJS.Timer;
-    if (init) {
-      refreshTimer = setTimeout(() => {
+    let refreshTimer: NodeJS.Timer | undefined;
+    let intervalTimeInMS = pollingInterval;
+    if (intervalTimeInMS < 30000) {
+      const s = intervalTimeInMS;
+      intervalTimeInMS = 30000;
+      // eslint-disable-next-line no-console
+      console.warn(`Polling Interval ${s} is too short. Using 30000 instead.`);
+    }
+    if (refreshTimer) {
+      refreshTimer = undefined;
+    }
+    if (init && localValidators && localValidators.length > 0) {
+      refreshTimer = setInterval(() => {
         setIsUpdating(true);
-      }, 30000);
+      }, intervalTimeInMS);
     }
     return () => {
       if (refreshTimer) {
         clearInterval(refreshTimer);
       }
     };
-  }, [init]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [init, pollingInterval]);
+
+  useEffect(() => {
+    if (
+      typeof allChainsStore.setAllChains === 'function' &&
+      allChainsRef.current === true
+    ) {
+      allChainsStore.setAllChains(props.chains);
+      allChainsRef.current = false;
+    }
+    return () => {
+      setIsUpdating(true);
+    };
+  }, [allChainsStore, props.chains, setIsUpdating]);
 
   return (
     <Main>
@@ -334,7 +367,29 @@ const Index = (props: IndexProps) => {
               <BarLoader color="#231d4b" height={10} width={200} />
             </div>
           ) : null}
-          {init && validatorStore.validators ? (
+          {init &&
+            validatorStore.validators &&
+            validatorStore.validators.length === 0 && (
+              <button
+                type="button"
+                className="relative block w-full border-2 border-gray-300 border-dashed rounded-lg p-12 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                style={{ minHeight: '400px' }}
+                onClick={() => activate(ADD_VALIDATOR)}
+              >
+                <span
+                  className="material-icons mx-auto text-white"
+                  style={{ fontSize: '50px' }}
+                >
+                  bolt
+                </span>
+                <span className="mt-2 block text-sm font-medium text-white">
+                  Add a new validator
+                </span>
+              </button>
+            )}
+          {init &&
+          validatorStore.validators &&
+          validatorStore.validators.length > 0 ? (
             <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {validatorStore.validators.map(
                 ({ validator, chain, key: address }) => {
@@ -400,6 +455,8 @@ const Index = (props: IndexProps) => {
                       rank={rank ? rank + 1 : 0}
                       blocks={blocks}
                       validatorAddress={address}
+                      operatorAddress={validator.operator_address}
+                      chain={chain}
                     />
                   );
                 }

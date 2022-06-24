@@ -7,14 +7,14 @@
   "coin_type": "234",
   "min_tx_fee": "8000",
   "addr_prefix": "star",
-  "logo": "/logos/starname.jpg",
+  "logo": "/assets/images/logos/starname.jpg",
   "assets": [
     {
       "base": "uiov",
       "symbol": "IOV",
       "exponent": "6",
       "coingecko_id": "starname",
-      "logo": "/logos/starname.jpg"
+      "logo": "/assets/images/logos/starname.jpg"
     }
   ]
 }

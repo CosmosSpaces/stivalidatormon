@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
+
+import create from 'zustand';
 
 import StorageItem from '../model/storageitem';
 
-const KEY = 'cs:validators';
+const VALIDATORS_KEY = 'cs:validators';
+const POLLING_KEY = 'cs:polling-interval';
 
-const initialState: StorageItem[] = [
+const initialStorageItems: StorageItem[] = [
   {
     operatorAddress: 'junovaloper1836fhsg6yqpu98vezfc7caakchqe8pvske7t8q',
     chainName: 'juno',
@@ -54,33 +57,78 @@ const initialState: StorageItem[] = [
     chainName: 'juno',
   },
 ];
+const initialInterval: number = 30000;
 
-const save = (validators: StorageItem[]) => {
-  window.localStorage.setItem(KEY, JSON.stringify(validators));
+const save = <T>(key: string, value: T) => {
+  const parsed = typeof value === 'string' ? value : JSON.stringify(value);
+  window.localStorage.setItem(key, parsed);
+  return value;
 };
 
-const download = () => {
-  const cache = window.localStorage.getItem(KEY);
-  let parsed: StorageItem[] = [];
+const download = <T>(key: string, defaultValue: T, parse = true) => {
+  const cache = window.localStorage.getItem(key);
+  let parsed: T;
   if (cache) {
-    parsed = JSON.parse(cache);
+    parsed = parse ? JSON.parse(cache) : cache; // allow strings to bypass parsing.
   } else {
-    parsed = initialState;
+    parsed = defaultValue;
   }
   return parsed;
 };
-
-const useLocalValidators = () => {
-  const [validators, setValidators] = useState<StorageItem[] | undefined>(
-    undefined
-  );
+interface UseLocalValidators {
+  validators: StorageItem[] | undefined;
+  setValidators: (validators: StorageItem[]) => void;
+}
+const useLocalValidatorsState = create<UseLocalValidators>((set) => ({
+  validators: undefined,
+  setValidators: (validators) => {
+    set((state) => ({
+      ...state,
+      validators: save<StorageItem[]>(VALIDATORS_KEY, validators),
+    }));
+  },
+}));
+export const useLocalValidators = () => {
+  const { validators, setValidators } = useLocalValidatorsState();
+  const firstUpdate = useRef(true);
   useEffect(() => {
-    setValidators(download());
-  }, []);
+    if (firstUpdate.current === true && typeof setValidators === 'function') {
+      setValidators(download(VALIDATORS_KEY, initialStorageItems));
+      firstUpdate.current = false;
+    }
+  }, [setValidators]);
   return {
-    save,
+    save: setValidators,
     validators,
   };
 };
-
-export default useLocalValidators;
+interface UsePollingInterval {
+  pollingInterval: number;
+  setPollingInterval: (interval: number) => void;
+}
+export const usePollingIntervalState = create<UsePollingInterval>((set) => ({
+  pollingInterval: 0,
+  setPollingInterval: (interval) => {
+    set((state) => ({
+      ...state,
+      pollingInterval: save(POLLING_KEY, interval),
+    }));
+  },
+}));
+export const usePollingInterval = () => {
+  const { pollingInterval, setPollingInterval } = usePollingIntervalState();
+  const firstUpdate = useRef(true);
+  useEffect(() => {
+    if (
+      firstUpdate.current === true &&
+      typeof setPollingInterval === 'function'
+    ) {
+      setPollingInterval(download(POLLING_KEY, initialInterval));
+      firstUpdate.current = false;
+    }
+  }, [setPollingInterval]);
+  return {
+    pollingInterval,
+    setPollingInterval,
+  };
+};

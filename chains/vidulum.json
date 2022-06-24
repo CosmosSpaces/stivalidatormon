@@ -11,14 +11,14 @@
   "coin_type": "370",
   "min_tx_fee": "8000",
   "addr_prefix": "vdl",
-  "logo": "/logos/VDL.png",
+  "logo": "/assets/images/logos/VDL.png",
   "assets": [
     {
       "base": "uvdl",
       "symbol": "VDL",
       "exponent": "6",
       "coingecko_id": "vidulum",
-      "logo": "/logos/VDL.png"
+      "logo": "/assets/images/logos/VDL.png"
     }
   ]
 }

@@ -8,14 +8,14 @@
   "coin_type": "505",
   "min_tx_fee": "800000000",
   "addr_prefix": "pb",
-  "logo": "/logos/provenance.svg",
+  "logo": "/assets/images/logos/provenance.svg",
   "assets": [
     {
       "base": "nhash",
       "symbol": "HASH",
       "exponent": "9",
       "coingecko_id": "",
-      "logo": "/logos/provenance.svg"
+      "logo": "/assets/images/logos/provenance.svg"
     }
   ]
 }

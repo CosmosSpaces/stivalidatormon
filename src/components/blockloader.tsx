@@ -1,6 +1,7 @@
 import { truncate } from '../lib/util';
 import { Block } from '../model/block';
 import Cosmos from '../model/cosmo';
+import useValidatorEdit from '../stores/usevalidatoredit';
 
 interface BlockProps {
   fail?: boolean;
@@ -19,6 +20,7 @@ const BlockComponent = (props: BlockProps) => {
 };
 
 const BlockLoader = (props: Cosmos) => {
+  const { setSelected, removeSelected } = useValidatorEdit();
   const checkStatus = (block: Block) => {
     return (
       block?.last_commit?.signatures?.some(
@@ -26,11 +28,27 @@ const BlockLoader = (props: Cosmos) => {
       ) ?? false
     );
   };
-  const title = truncate(`${props.chainName} - ${props.name}`, 27);
+  const title = truncate(props.name, 27);
   return (
     <div>
       <div className="flex w-full items-center mb-4">
-        <input type="checkbox" />
+        <input
+          type="checkbox"
+          onClick={(event) => {
+            if (event.target instanceof HTMLInputElement) {
+              if (event.target.checked) {
+                setSelected(props);
+              } else {
+                removeSelected(props.validatorAddress);
+              }
+            }
+          }}
+        />
+        <img
+          src={props.chain.logo}
+          className="flex-shrink-0 ml-2 h-6 w-6 rounded-full"
+          alt={`${props.chain.chain_name} logo`}
+        />
         <p
           className="ml-2 text-cyan-400"
           dangerouslySetInnerHTML={{ __html: title }}

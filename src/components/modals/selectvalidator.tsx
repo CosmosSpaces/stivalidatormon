@@ -1,27 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import useAllChains from '../../stores/useallchains';
+import { validatorsByChain } from '../../lib/query';
+import { useLocalValidators } from '../../lib/storage';
+import { consensusPubkeyToHexAddress } from '../../lib/util';
+import StorageItem from '../../model/storageitem';
+import Validator from '../../model/validator';
 import useModals from '../../stores/usemodals';
 import useSelectedChain from '../../stores/useselectedchain';
+import useValidators from '../../stores/usevalidators';
 import { Modal } from '../modal';
-import { ID as SELECT_VALIDATOR } from './selectvalidator';
 
-export const ID = 'add-validator';
+export const ID = 'select-validator';
 
-const AddValidator = (props: { id: string }) => {
-  const { deactivate, activate } = useModals();
-  const { chains } = useAllChains();
-  const { chain: selectedChain, setSelectedChain } = useSelectedChain();
-  const [selectedChainOpen, setSelectedChainOpen] = useState<boolean>(false);
+const SelectValidator = (props: { id: string }) => {
+  const { deactivate } = useModals();
+  const { chain } = useSelectedChain();
+  const validatorStore = useValidators();
+  const { save, validators: localValidators } = useLocalValidators();
+  const [validators, setValidators] = useState<Validator[]>();
+  const [selectedValidator, setSelectedValidator] = useState<Validator>();
+  const [selectedValidatorOpen, setSelectedChainOpen] =
+    useState<boolean>(false);
+
   const close = () => deactivate(props.id);
   const titleId = `${props.id}-title`;
+
+  const getValidators = async () => {
+    if (!chain) return;
+    const v = await validatorsByChain(chain);
+    setValidators(v.result);
+  };
+
+  useEffect(() => {
+    getValidators();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <Modal
       id={props.id}
       aria-labelledby={titleId}
       onClick={() => {
-        if (selectedChainOpen) {
+        if (selectedValidatorOpen) {
           setSelectedChainOpen(false);
         }
       }}
@@ -36,15 +56,57 @@ const AddValidator = (props: { id: string }) => {
           </div>
           <Modal.Header title="Add Validator" titleId={titleId} />
           <div className="mt-8  mb-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div className="py-8 px-4 shadow sm:rounded-lg sm:px-10">
-              <form className="space-y-6" action="#" method="POST">
+            <div className="py-8 px-4 sm:px-10">
+              <form
+                className="space-y-6"
+                action="#"
+                method="GET"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (validatorStore && validatorStore.validators) {
+                    if (
+                      validatorStore.validators.filter(
+                        ({ validator: { operator_address } }) =>
+                          operator_address ===
+                            selectedValidator?.operator_address ?? ''
+                      ).length > 0
+                    ) {
+                      deactivate(props.id);
+                    } else if (selectedValidator && chain) {
+                      const key = consensusPubkeyToHexAddress(
+                        selectedValidator.consensus_pubkey
+                      );
+                      const nextValidators = [
+                        ...validatorStore.validators,
+                        {
+                          chain,
+                          validator: selectedValidator,
+                          key,
+                        },
+                      ];
+
+                      validatorStore.setValidators(nextValidators);
+                      const nextCache: StorageItem[] = [
+                        ...(localValidators ?? []),
+                        {
+                          operatorAddress: selectedValidator.operator_address,
+                          chainName: chain.chain_name,
+                        },
+                      ];
+                      save(nextCache);
+                      deactivate(props.id);
+                    }
+                  }
+                }}
+              >
                 <div>
                   <label
                     id="listbox-label"
                     className="block text-sm font-medium text-white"
                   >
                     {' '}
-                    Cosmos Chain{' '}
+                    Validator{' '}
                   </label>
                   <div className="mt-1 relative">
                     <button
@@ -54,21 +116,13 @@ const AddValidator = (props: { id: string }) => {
                       aria-expanded="true"
                       aria-labelledby="listbox-label"
                       onClick={() => {
-                        setSelectedChainOpen(!selectedChainOpen);
+                        setSelectedChainOpen(!selectedValidatorOpen);
                       }}
                     >
                       <span className="flex items-center">
-                        {selectedChain && selectedChain?.logo && (
-                          <img
-                            src={selectedChain.logo}
-                            alt={selectedChain.chain_name}
-                            className="flex-shrink-0 h-6 w-6 rounded-full"
-                          />
-                        )}
-                        <span className="ml-3 block truncate">
-                          {selectedChain?.chain_name
-                            .toUpperCase()
-                            .replaceAll('-', ' ') ?? 'Select a chain'}
+                        <span className="block truncate">
+                          {selectedValidator?.description.moniker ??
+                            'Select a validator'}
                         </span>
                       </span>
                       <span className="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
@@ -89,38 +143,31 @@ const AddValidator = (props: { id: string }) => {
                     </button>
                     <ul
                       className={`${
-                        selectedChainOpen ? 'absolute' : 'hidden'
+                        selectedValidatorOpen ? 'absolute' : 'hidden'
                       } z-10 mt-1 w-full bg-white shadow-lg max-h-56 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm`}
                       tabIndex={-1}
                       role="listbox"
                       aria-labelledby="listbox-label"
                       aria-activedescendant="listbox-option-3"
                     >
-                      {chains?.map((chain) => {
+                      {validators?.map((validator) => {
                         const isSelected =
-                          selectedChain &&
-                          selectedChain.chain_name === chain.chain_name;
+                          selectedValidator &&
+                          selectedValidator.operator_address ===
+                            validator.operator_address;
                         return (
                           <li
                             className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9"
-                            key={chain.chain_name}
+                            key={validator.operator_address}
                             role="option"
                             aria-selected={true}
                             onClick={() => {
-                              setSelectedChain(chain);
+                              setSelectedValidator(validator);
                             }}
                           >
                             <div className="flex items-center">
-                              <img
-                                src={chain.logo}
-                                alt={`${chain.chain_name} logo`}
-                                className="flex-shrink-0 h-6 w-6 rounded-full"
-                              />
-                              <span className="font-normal ml-3 block truncate">
-                                {' '}
-                                {chain.chain_name
-                                  .toUpperCase()
-                                  .replaceAll('-', ' ')}
+                              <span className="font-normal block truncate">
+                                {validator.description.moniker}{' '}
                               </span>
                             </div>
                             <span className="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4">
@@ -149,14 +196,14 @@ const AddValidator = (props: { id: string }) => {
 
                 <div>
                   <button
-                    type="button"
+                    type="submit"
+                    disabled={
+                      typeof validators === 'undefined' ||
+                      (Array.isArray(validators) && validators.length === 0)
+                    }
                     className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    onClick={() => {
-                      activate(SELECT_VALIDATOR);
-                      deactivate(props.id);
-                    }}
                   >
-                    Next
+                    Add
                   </button>
                 </div>
               </form>
@@ -169,4 +216,4 @@ const AddValidator = (props: { id: string }) => {
   );
 };
 
-export default AddValidator;
+export default SelectValidator;

@@ -7,7 +7,7 @@
   "coin_type": "118",
   "min_tx_fee": "800",
   "addr_prefix": "ex",
-  "logo": "/logos/okexchain.svg",
+  "logo": "/assets/images/logos/okexchain.svg",
   "unload_module": ["minting", "slashing"],
   "assets": [
     {
@@ -15,7 +15,7 @@
       "symbol": "okt",
       "exponent": "0",
       "coingecko_id": "okexchain",
-      "logo": "/logos/okexchain.svg"
+      "logo": "/assets/images/logos/okexchain.svg"
     }
   ]
 }

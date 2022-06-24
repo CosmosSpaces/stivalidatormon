@@ -7,14 +7,14 @@
   "coin_type": "118",
   "min_tx_fee": "5000",
   "addr_prefix": "micro",
-  "logo": "/logos/microtick.png",
+  "logo": "/assets/images/logos/microtick.png",
   "assets": [
     {
       "base": "utick",
       "symbol": "TICK",
       "exponent": "6",
       "coingecko_id": "",
-      "logo": "/logos/microtick.png"
+      "logo": "/assets/images/logos/microtick.png"
     }
   ]
 }

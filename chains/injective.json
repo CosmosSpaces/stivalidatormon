@@ -11,14 +11,14 @@
   "min_tx_fee": "5000",
   "addr_prefix": "inj",
   "excludes": "",
-  "logo": "/logos/injective.jpg",
+  "logo": "/assets/images/logos/injective.jpg",
   "assets": [
     {
       "base": "inj",
       "symbol": "INJ",
       "exponent": "18",
       "coingecko_id": "injective-protocol",
-      "logo": "/logos/injective.jpg"
+      "logo": "/assets/images/logos/injective.jpg"
     }
   ]
 }

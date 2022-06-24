@@ -15,9 +15,9 @@
       "symbol": "BAND",
       "exponent": "6",
       "coingecko_id": "band-protocol",
-      "logo": "/logos/band-protocol.svg"
+      "logo": "/assets/images/logos/band-protocol.svg"
     }
   ],
-  "logo": "/logos/band-protocol.svg",
+  "logo": "/assets/images/logos/band-protocol.svg",
   "sdk_version": "0.45.0"
 }

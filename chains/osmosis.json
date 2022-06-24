@@ -15,21 +15,21 @@
   "coin_type": "118",
   "min_tx_fee": "800",
   "addr_prefix": "osmo",
-  "logo": "/logos/osmosis.jpg",
+  "logo": "/assets/images/logos/osmosis.jpg",
   "assets": [
     {
       "base": "uosmo",
       "symbol": "OSMO",
       "exponent": "6",
       "coingecko_id": "osmosis",
-      "logo": "/logos/osmosis.jpg"
+      "logo": "/assets/images/logos/osmosis.jpg"
     },
     {
       "base": "uion",
       "symbol": "ION",
       "exponent": "6",
       "coingecko_id": "ion",
-      "logo": "/logos/osmosis.jpg"
+      "logo": "/assets/images/logos/osmosis.jpg"
     },
     {
       "base": "usomm",

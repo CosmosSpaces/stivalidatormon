@@ -43,10 +43,10 @@ export const getValidatorByAddress = async (
   return response;
 };
 
-export const useValidatorsByChain = (chain: Chain) => {
+export const useValidatorsByChain = (chain?: Chain) => {
   return useQuery(
-    ['validators', chain.chain_name],
-    async () => validatorsByChain(chain),
+    ['validators', chain?.chain_name],
+    async () => (chain ? validatorsByChain(chain) : undefined),
     {
       enabled: false,
     }

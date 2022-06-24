@@ -11,14 +11,14 @@
   "coin_type": "118",
   "min_tx_fee": "3000",
   "addr_prefix": "like",
-  "logo": "/logos/likecoin.png",
+  "logo": "/assets/images/logos/likecoin.png",
   "assets": [
     {
       "base": "nanolike",
       "symbol": "LIKE",
       "exponent": "9",
       "coingecko_id": "likecoin",
-      "logo": "/logos/likecoin.png"
+      "logo": "/assets/images/logos/likecoin.png"
     }
   ]
 }

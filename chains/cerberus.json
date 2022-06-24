@@ -11,14 +11,14 @@
   "coin_type": "118",
   "min_tx_fee": "5000",
   "addr_prefix": "cerberus",
-  "logo": "/logos/cerberus.png",
+  "logo": "/assets/images/logos/cerberus.png",
   "assets": [
     {
       "base": "ucrbrus",
       "symbol": "CRBRUS",
       "exponent": "6",
       "coingecko_id": "",
-      "logo": "/logos/cerberus.png"
+      "logo": "/assets/images/logos/cerberus.png"
     }
   ]
 }

@@ -14,14 +14,14 @@
   "coin_type": "60",
   "min_tx_fee": "3000000000000000",
   "addr_prefix": "evmos",
-  "logo": "/logos/evmos.jpeg",
+  "logo": "/assets/images/logos/evmos.jpeg",
   "assets": [
     {
       "base": "aevmos",
       "symbol": "evmos",
       "exponent": "18",
       "coingecko_id": "",
-      "logo": "/logos/evmos.jpeg"
+      "logo": "/assets/images/logos/evmos.jpeg"
     }
   ]
 }

@@ -10,14 +10,14 @@
   "coin_type": "118",
   "min_tx_fee": "8000",
   "addr_prefix": "ki",
-  "logo": "/logos/kichain.png",
+  "logo": "/assets/images/logos/kichain.png",
   "assets": [
     {
       "base": "uxki",
       "symbol": "XKI",
       "exponent": "6",
       "coingecko_id": "ki",
-      "logo": "/logos/kichain.png"
+      "logo": "/assets/images/logos/kichain.png"
     }
   ]
 }
