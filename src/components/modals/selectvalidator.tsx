@@ -37,15 +37,7 @@ const SelectValidator = (props: { id: string }) => {
   }, []);
 
   return (
-    <Modal
-      id={props.id}
-      aria-labelledby={titleId}
-      onClick={() => {
-        if (selectedValidatorOpen) {
-          setSelectedChainOpen(false);
-        }
-      }}
-    >
+    <Modal id={props.id} aria-labelledby={titleId}>
       <Modal.Window className="h-3/6 w-5/6 md:w-4/12">
         <div className="relative h-max">
           <div className="absolute top-3 bottom-0 right-4 z-50">
