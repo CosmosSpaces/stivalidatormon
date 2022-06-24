@@ -7,19 +7,21 @@ import StorageItem from '../../model/storageitem';
 import Validator from '../../model/validator';
 import useModals from '../../stores/usemodals';
 import useSelectedChain from '../../stores/useselectedchain';
+import useUpdating from '../../stores/useupdating';
 import useValidators from '../../stores/usevalidators';
 import { Modal } from '../modal';
 
 export const ID = 'select-validator';
 
 const SelectValidator = (props: { id: string }) => {
+  const { setIsUpdating } = useUpdating();
   const { deactivate } = useModals();
   const { chain } = useSelectedChain();
   const validatorStore = useValidators();
   const { save, validators: localValidators } = useLocalValidators();
   const [validators, setValidators] = useState<Validator[]>();
   const [selectedValidator, setSelectedValidator] = useState<Validator>();
-  const [selectedValidatorOpen, setSelectedChainOpen] =
+  const [selectedValidatorOpen, setSelectedValidatorOpen] =
     useState<boolean>(false);
 
   const close = () => deactivate(props.id);
@@ -88,6 +90,7 @@ const SelectValidator = (props: { id: string }) => {
                       ];
                       save(nextCache);
                       deactivate(props.id);
+                      setIsUpdating(true);
                     }
                   }
                 }}
@@ -108,7 +111,7 @@ const SelectValidator = (props: { id: string }) => {
                       aria-expanded="true"
                       aria-labelledby="listbox-label"
                       onClick={() => {
-                        setSelectedChainOpen(!selectedValidatorOpen);
+                        setSelectedValidatorOpen(!selectedValidatorOpen);
                       }}
                     >
                       <span className="flex items-center">
@@ -155,6 +158,7 @@ const SelectValidator = (props: { id: string }) => {
                             aria-selected={true}
                             onClick={() => {
                               setSelectedValidator(validator);
+                              setSelectedValidatorOpen(false);
                             }}
                           >
                             <div className="flex items-center">
