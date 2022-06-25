@@ -1,5 +1,3 @@
-import { useQuery } from 'react-query';
-
 import { BlockResponse } from '../model/block';
 import Chain from '../model/chain';
 import Result from '../model/result';
@@ -43,16 +41,6 @@ export const getValidatorByAddress = async (
   return response;
 };
 
-export const useValidatorsByChain = (chain?: Chain) => {
-  return useQuery(
-    ['validators', chain?.chain_name],
-    async () => (chain ? validatorsByChain(chain) : undefined),
-    {
-      enabled: false,
-    }
-  );
-};
-
 /**
  * Get Latest Block by Chain
  * @param {Chain} chain current block chain.
@@ -82,16 +70,6 @@ const blockByHeight = async (
 };
 
 export { blockByHeight };
-
-export const useBlockByHeight = (chain: Chain, height: number) => {
-  return useQuery(
-    ['block', chain.chain_name, height],
-    async () => blockByHeight(chain, height),
-    {
-      enabled: false,
-    }
-  );
-};
 
 export const getSlashingInfo = async (chain: Chain) => {
   const request = await fetch(

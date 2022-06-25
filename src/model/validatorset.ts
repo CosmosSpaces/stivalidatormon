@@ -14,6 +14,6 @@ export default interface ValidatorSet {
 }
 export interface ValidatorSetResponse {
   block_height: string;
-  pagination: Pagination;
+  pagination: Pagination | null;
   validators: ValidatorSet[];
 }

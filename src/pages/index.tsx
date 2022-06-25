@@ -117,12 +117,12 @@ const Index = (props: IndexProps) => {
       const vs = await getValidatorSets({
         chain,
       });
-      if (vs.pagination.total) {
+      if (vs.pagination?.total) {
         total = parseInt(vs.pagination.total, 10);
         fetched = vs.validators.length;
         validators = vs.validators;
       }
-      if (vs.block_height) {
+      if (vs && vs?.block_height) {
         height = Number(vs.block_height);
       }
       if (height > 14400) {
