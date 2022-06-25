@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 import React, { useEffect, useState } from 'react';
 
 import ClockLoader from 'react-spinners/ClockLoader';
@@ -92,6 +93,39 @@ const Settings = () => {
               <Button type="submit" onClick={() => setSaving(true)}>
                 Save
               </Button>
+            </div>
+            <div className="w-1/2 mt-auto px-3 mb-5">
+              <div className="bg-purple-500 shadow sm:rounded-lg">
+                <div className="px-4 py-5 sm:p-6">
+                  <h3 className="text-lg leading-6 font-medium text-white">
+                    Reset validators
+                  </h3>
+                  <div className="mt-2 max-w-xl text-sm text-white">
+                    <p>
+                      Once you reset validators, you will have to manually add
+                      back the ones you want to track.
+                    </p>
+                  </div>
+                  <div className="mt-5">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center px-4 py-2 border border-transparent font-medium rounded-md text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:text-sm"
+                      onClick={() => {
+                        // eslint-disable-next-line no-restricted-globals
+                        const response = confirm(
+                          'Are you sure you want to reset?'
+                        );
+                        if (response === true) {
+                          localStorage.clear();
+                          window.location.href = window.location.origin;
+                        }
+                      }}
+                    >
+                      Reset settings
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </form>
         </div>
