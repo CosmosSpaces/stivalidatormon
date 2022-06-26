@@ -458,7 +458,10 @@ const Index = (props: IndexProps) => {
           {init &&
           validatorStore.validators &&
           validatorStore.validators.length > 0 ? (
-            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 h-96">
+            <div
+              className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+              style={{ minHeight: '24rem' }}
+            >
               {validatorStore.validators.map(
                 ({ validator, chain, key: address }) => {
                   const blocks = chainState?.find(
