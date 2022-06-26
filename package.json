@@ -1,6 +1,6 @@
 {
   "name": "cosmos-spaces-valmon",
-  "version": "0.13.0",
+  "version": "0.14.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

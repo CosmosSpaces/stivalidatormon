@@ -366,11 +366,9 @@ const Index = (props: IndexProps) => {
       allChainsRef.current === true
     ) {
       allChainsStore.setAllChains(props.chains);
+      setIsUpdating(true);
       allChainsRef.current = false;
     }
-    return () => {
-      setIsUpdating(true);
-    };
   }, [allChainsStore, props.chains, setIsUpdating]);
 
   return (
@@ -460,7 +458,7 @@ const Index = (props: IndexProps) => {
           {init &&
           validatorStore.validators &&
           validatorStore.validators.length > 0 ? (
-            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 h-96">
               {validatorStore.validators.map(
                 ({ validator, chain, key: address }) => {
                   const blocks = chainState?.find(

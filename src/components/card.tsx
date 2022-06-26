@@ -6,7 +6,7 @@ const Card = (props: Cosmos) => {
   const { activate } = useModals();
   const isNegativeChange = Math.sign(props.twentyFourHourChange) === -1;
   return (
-    <div className="bg-purple-300 overflow-hidden shadow rounded-lg flex flex-col">
+    <div className="bg-purple-300 overflow-hidden shadow rounded-lg flex flex-col h-max">
       <div className="px-5 pt-5">
         <BlockLoader {...props} />
       </div>
