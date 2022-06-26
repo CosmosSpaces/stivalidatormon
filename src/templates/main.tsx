@@ -5,6 +5,7 @@ import { Button } from '../components/elements';
 import MobileMenu from '../components/mobilemenu';
 import MobileMenuBtn from '../components/mobilemenubtn';
 import { ID as ADD_VALIDATOR } from '../components/modals/addvalidator';
+import NormalHeader from '../components/normalheader';
 import Sidebar from '../components/sidebar';
 import { useLocalValidators } from '../lib/storage';
 import StorageItem from '../model/storageitem';
@@ -13,12 +14,27 @@ import useUpdating from '../stores/useupdating';
 import useValidatorEdit from '../stores/usevalidatoredit';
 import useValidators from '../stores/usevalidators';
 
-const Main = (props: { children: ReactNode }) => {
+const Main = (props: { children: ReactNode; normalHeader?: boolean }) => {
   const { activate } = useModals();
   const { selected, reset } = useValidatorEdit();
   const { save, validators } = useLocalValidators();
   const validatorStore = useValidators();
   const { setIsUpdating } = useUpdating();
+
+  if (props?.normalHeader === true) {
+    return (
+      <div className="min-h-full">
+        <NormalHeader />
+        <main className="flex-1 pb-8 bg-purple-100">
+          {props.children}
+          <div className="mt-8">
+            <CosmosSpacesAd />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-full">
       {/* <!-- Off-canvas menu for mobile, show/hide based on off-canvas menu state. --> */}

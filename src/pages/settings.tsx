@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 
 import ClockLoader from 'react-spinners/ClockLoader';
 
-import { Button } from '../components/elements';
 import { usePollingInterval } from '../lib/storage';
 import { Main } from '../templates/main';
 
@@ -28,44 +27,60 @@ const Settings = () => {
     }
   }, [pollingInterval, localInterval, init]);
   return (
-    <Main>
+    <Main normalHeader>
       {saving ? <SaveOverlay /> : null}
-      <div className="mt-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="w-1/2 px-3 mb-5">
-            <p className="text-white text-xl">Settings</p>
+      <div className="py-8 bg-purple-300 shadow-md">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 bg-purple-300">
+          <div>
+            <div className="md:flex md:items-center md:justify-between bg-purple-300">
+              <div className=" min-w-0">
+                <h2 className="text-2xl font-semibold leading-7 text-white sm:text-3xl">
+                  Settings
+                </h2>
+              </div>
+              <div className="mt-4 flex-shrink-0 flex md:mt-0 md:ml-4">
+                <button
+                  type="button"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => {
+                    setSaving(true);
+                    setTimeout(() => {
+                      setSaving(false);
+                    }, 500);
+                    if (!localInterval) {
+                      // eslint-disable-next-line no-console
+                      console.error(
+                        `Polling Interval ${localInterval} is too short.`
+                      );
+                      return;
+                    }
+                    if (localInterval >= 30000) {
+                      setPollingInterval(localInterval);
+                    } else {
+                      // eslint-disable-next-line no-console
+                      console.error(
+                        `Polling Interval ${localInterval} is too short.`
+                      );
+                    }
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
       <div className="mt-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <form
-            className="flex flex-col"
-            style={{ height: '80vh' }}
-            onSubmit={(event) => {
-              event.preventDefault();
-              event.stopPropagation();
-              setTimeout(() => {
-                setSaving(false);
-              }, 500);
-              if (!localInterval) {
-                // eslint-disable-next-line no-console
-                console.error(
-                  `Polling Interval ${localInterval} is too short.`
-                );
-                return;
-              }
-              if (localInterval >= 30000) {
-                setPollingInterval(localInterval);
-              } else {
-                // eslint-disable-next-line no-console
-                console.error(
-                  `Polling Interval ${localInterval} is too short.`
-                );
-              }
-            }}
-          >
-            <div className="w-1/2 px-3 mb-5">
+          <div className="flex flex-col" style={{ height: '50vh' }}>
+            <div className="w-full md:w-1/2 mb-5">
               <label
                 htmlFor=""
                 className="text-xs text-white font-semibold px-1"
@@ -89,21 +104,17 @@ const Settings = () => {
                 />
               </div>
             </div>
-            <div className="w-1/2 px-3 mb-5">
-              <Button type="submit" onClick={() => setSaving(true)}>
-                Save
-              </Button>
-            </div>
-            <div className="w-1/2 mt-auto px-3 mb-5">
+            <div className="w-full md:w-1/2 mt-auto mb-5">
               <div className="bg-purple-500 shadow sm:rounded-lg">
                 <div className="px-4 py-5 sm:p-6">
                   <h3 className="text-lg leading-6 font-medium text-white">
-                    Reset validators
+                    Reset settings
                   </h3>
                   <div className="mt-2 max-w-xl text-sm text-white">
                     <p>
                       Once you reset validators, you will have to manually add
-                      back the ones you want to track.
+                      back the ones you want to track. You&apos;ll also need to
+                      re-adjust polling interval.
                     </p>
                   </div>
                   <div className="mt-5">
@@ -127,7 +138,7 @@ const Settings = () => {
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </Main>

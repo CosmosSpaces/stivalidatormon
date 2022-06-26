@@ -6,6 +6,8 @@ import BarLoader from 'react-spinners/BarLoader';
 import PuffLoader from 'react-spinners/PuffLoader';
 
 import Card from '../components/card';
+import { Button } from '../components/elements';
+import Fab from '../components/floatingactionbutton';
 import { ID as ADD_VALIDATOR } from '../components/modals/addvalidator';
 import { getChains } from '../lib/fs';
 import {
@@ -28,6 +30,7 @@ import ValidatorState from '../model/validatorstate';
 import useAllChains from '../stores/useallchains';
 import useModals from '../stores/usemodals';
 import useUpdating from '../stores/useupdating';
+import useValidatorEdit from '../stores/usevalidatoredit';
 import useValidators from '../stores/usevalidators';
 import { Main } from '../templates/main';
 
@@ -43,10 +46,11 @@ interface ChainStateItem {
 
 const Index = (props: IndexProps) => {
   // local storage state.
-  const { validators: localValidators } = useLocalValidators();
+  const { validators: localValidators, save } = useLocalValidators();
   const { pollingInterval } = usePollingInterval();
   // local state.
   const validatorStore = useValidators();
+  const { selected, reset } = useValidatorEdit();
   const { activate } = useModals();
   const { isUpdating, setIsUpdating } = useUpdating();
   const allChainsRef = useRef(true);
@@ -191,30 +195,38 @@ const Index = (props: IndexProps) => {
     const n: ChainStateItem = {
       ...c,
     };
-    const latestBlock = await getLatestBlock(c.chain);
-    const currentHeight = parseInt(latestBlock.block.header.height, 10);
-    n.blocks = [latestBlock.block];
-    // get latest 50 blocks.
-    let blockPromises: Promise<BlockResponse>[] = [];
-    for (let i = currentHeight - 1; i > currentHeight - 50; i -= 1) {
-      blockPromises = [...blockPromises, blockByHeight(c.chain, i)];
+    try {
+      const latestBlock = await getLatestBlock(c.chain);
+      const currentHeight = parseInt(latestBlock.block.header.height, 10);
+      n.blocks = [latestBlock.block];
+      // get latest 50 blocks.
+      let blockPromises: Promise<BlockResponse>[] = [];
+      for (let i = currentHeight - 1; i > currentHeight - 50; i -= 1) {
+        blockPromises = [...blockPromises, blockByHeight(c.chain, i)];
+      }
+      const blockResponses: BlockResponse[] = await Promise.all(blockPromises);
+      n.blocks = [...n.blocks, ...blockResponses.map(({ block }) => block)];
+      return n;
+    } catch (error) {
+      return n;
     }
-    const blockResponses: BlockResponse[] = await Promise.all(blockPromises);
-    n.blocks = [...n.blocks, ...blockResponses.map(({ block }) => block)];
-    return n;
   };
   const setValidatorsByChain = async (d: ChainStateItem) => {
     const n: ChainStateItem = {
       ...d,
     };
-    const validatorsResult = await validatorsByChain(d.chain);
-    n.validators = validatorsResult.result;
-    // sorting validators by rank while we're at it.
-    n.validators = n.validators.sort(
-      (a, b) =>
-        parseInt(b.delegator_shares, 10) - parseInt(a.delegator_shares, 10)
-    );
-    return n;
+    try {
+      const validatorsResult = await validatorsByChain(d.chain);
+      n.validators = validatorsResult.result;
+      // sorting validators by rank while we're at it.
+      n.validators = n.validators.sort(
+        (a, b) =>
+          parseInt(b.delegator_shares, 10) - parseInt(a.delegator_shares, 10)
+      );
+      return n;
+    } catch (error) {
+      return n;
+    }
   };
   const fetchBlocks = async (e: ChainStateItem[]) => {
     let next: ChainStateItem[] = [];
@@ -271,6 +283,30 @@ const Index = (props: IndexProps) => {
     return Promise.resolve(next);
   };
 
+  const getTime = () => {
+    const date = new Date();
+    let hh: number | string = date.getHours();
+    let mm: number | string = date.getMinutes();
+    let ss: number | string = date.getSeconds();
+    let session = 'AM';
+
+    if (hh === 0) {
+      hh = 12;
+    }
+    if (hh > 12) {
+      hh -= 12;
+      session = 'PM';
+    }
+
+    hh = hh < 10 ? `${hh}` : hh;
+    mm = mm < 10 ? `0${mm}` : mm;
+    ss = ss < 10 ? `0${ss}` : ss;
+
+    const time = `${hh}:${mm}:${ss} ${session}`;
+
+    return time;
+  };
+
   // side effects.
   useEffect(() => {
     if (localValidators && isUpdating) {
@@ -288,7 +324,7 @@ const Index = (props: IndexProps) => {
         // allow cards to display and stamp time.
         setInit(true);
         if (validators.length > 0) {
-          setLastUpdatedTimestamp(new Date().toTimeString());
+          setLastUpdatedTimestamp(getTime());
         }
         if (isUpdating) {
           setIsUpdating(false);
@@ -338,28 +374,62 @@ const Index = (props: IndexProps) => {
   }, [allChainsStore, props.chains, setIsUpdating]);
 
   return (
-    <Main>
+    <Main normalHeader>
       {/* <!-- Page header --> */}
-      <div className="bg-purple-300 shadow">
+      {Array.isArray(selected) && selected.length > 0 && (
+        <Fab
+          onClick={() => {
+            const addresses: string[] = selected.map(
+              ({ operatorAddress }) => operatorAddress
+            );
+            const nextValidators =
+              validatorStore.validators?.filter(
+                ({ validator: { operator_address } }) =>
+                  !addresses.includes(operator_address)
+              ) ?? [];
+            validatorStore.setValidators(nextValidators);
+            const nextCache: StorageItem[] =
+              localValidators?.filter(
+                ({ operatorAddress }) => !addresses.includes(operatorAddress)
+              ) ?? [];
+            save(nextCache);
+            reset();
+            setTimeout(() => {
+              setIsUpdating(true);
+            }, 500);
+          }}
+          danger
+          materialIcon="delete"
+        />
+      )}
+      <div className="bg-purple-300 shadow-md">
         <div className="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
-          <div className="py-6 md:flex md:items-center md:justify-between lg:border-t lg:border-gray-200 w-full">
-            <div className="text-white flex items-center">
-              <p>
-                last updated: {isUpdating && init ? null : lastUpdateTimestamp}
+          <div className="py-6 md:flex md:items-center md:justify-between w-full">
+            <div className="flex flex-col">
+              <div className="text-white flex items-center">
+                <p>
+                  last updated:{' '}
+                  {isUpdating && init ? null : lastUpdateTimestamp}
+                </p>
+                {isUpdating && init ? (
+                  <PuffLoader color="#22d3ee" size={25} />
+                ) : null}
+              </div>
+              <p className="text-xs text-gray-600">
+                v{process.env.NEXT_PUBLIC_APP_VERSION}beta
               </p>
-              {isUpdating && init ? (
-                <PuffLoader color="#22d3ee" size={25} />
-              ) : null}
             </div>
-            <p className="text-xs text-gray-600">
-              v{process.env.NEXT_PUBLIC_APP_VERSION}beta
-            </p>
+            <Button
+              onClick={() => activate(ADD_VALIDATOR)}
+              className="mt-4 md:mt-0"
+            >
+              Add Validator
+            </Button>
           </div>
         </div>
       </div>
 
       <div className="mt-8">
-        <div></div>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {!init ? (
             <div className="h-96 w-full flex flex-col items-center justify-center">
