@@ -18,6 +18,7 @@ const SaveOverlay = () => {
 const Settings = () => {
   const { pollingInterval, setPollingInterval } = usePollingInterval();
   const [localInterval, setLocalInterval] = useState<number>(0);
+  const [editingSettings, setEditingSettings] = useState<boolean>(false);
   const [saving, setSaving] = useState(false);
   const [init, setInit] = useState(false);
   useEffect(() => {
@@ -42,16 +43,19 @@ const Settings = () => {
                 <button
                   type="button"
                   className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  onClick={() => setEditingSettings(!editingSettings)}
                 >
                   Edit
                 </button>
                 <button
                   type="button"
-                  className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  disabled={!editingSettings}
+                  className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-cyan-500 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
                   onClick={() => {
                     setSaving(true);
                     setTimeout(() => {
                       setSaving(false);
+                      setEditingSettings(false);
                     }, 500);
                     if (!localInterval) {
                       // eslint-disable-next-line no-console
@@ -93,6 +97,7 @@ const Settings = () => {
                 </div>
                 <input
                   type="number"
+                  disabled={!editingSettings}
                   className="w-full -ml-10 pl-10 pr-3 py-2 rounded-lg border-2 border-gray-200 outline-none focus:border-indigo-500"
                   placeholder={'Enter an interval'}
                   value={localInterval ?? 0}

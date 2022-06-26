@@ -402,7 +402,7 @@ const Index = (props: IndexProps) => {
       )}
       <div className="bg-purple-300 shadow-md">
         <div className="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
-          <div className="py-6 md:flex md:items-center md:justify-between w-full">
+          <div className="py-6 flex items-center justify-between w-full">
             <div className="flex flex-col">
               <div className="text-white flex items-center">
                 <p>
@@ -417,10 +417,7 @@ const Index = (props: IndexProps) => {
                 v{process.env.NEXT_PUBLIC_APP_VERSION}beta
               </p>
             </div>
-            <Button
-              onClick={() => activate(ADD_VALIDATOR)}
-              className="mt-4 md:mt-0"
-            >
+            <Button onClick={() => activate(ADD_VALIDATOR)}>
               Add Validator
             </Button>
           </div>
