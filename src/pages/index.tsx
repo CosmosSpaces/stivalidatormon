@@ -289,21 +289,19 @@ const Index = (props: IndexProps) => {
     let mm: number | string = date.getMinutes();
     let ss: number | string = date.getSeconds();
     let session = 'AM';
-
     if (hh === 0) {
       hh = 12;
+    }
+    if (hh === 12) {
+      session = 'PM';
     }
     if (hh > 12) {
       hh -= 12;
       session = 'PM';
     }
-
-    hh = hh < 10 ? `${hh}` : hh;
     mm = mm < 10 ? `0${mm}` : mm;
     ss = ss < 10 ? `0${ss}` : ss;
-
     const time = `${hh}:${mm}:${ss} ${session}`;
-
     return time;
   };
 
