@@ -26,9 +26,8 @@ const Privacy = () => {
             anyone decided to use our Service, the Cosmos Spaces Valmon website.
             If you choose to use our Service, then you agree to the collection
             and use of information in relation with this policy. We currently
-            don&apos;t collect any information. In the future we might check
-            analytics for traffic data but that currently isn&apos;t
-            implemented.
+            only collect anonymous usage information. This is only to see if
+            anyone is using the site.
           </p>
         </section>
         <section className="pb-8 text-white text-sm">
@@ -48,8 +47,7 @@ const Privacy = () => {
             version, pages of our Service that you visit, the time and date of
             your visit, the time spent on those pages, and other statistics.
             This is only used in order to determine overall usage of the
-            application. This currently isn&apos;t in place so no log data is
-            being tracked.
+            application.
           </p>
 
           <h2 className="text-md text-cyan-400 font-semibold mb-2">Cookies</h2>
@@ -63,7 +61,8 @@ const Privacy = () => {
 
           <p className="mb-2">
             Our website will never create or use cookies. We are not cookie
-            monsters.
+            monsters. We&apos;re using GA4 for usage analytics which is
+            cookie-less.
           </p>
 
           <h2 className="text-md text-cyan-400 font-semibold mb-2">
