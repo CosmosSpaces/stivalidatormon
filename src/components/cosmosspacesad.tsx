@@ -1,3 +1,4 @@
+/*
 const CosmosSpacesAd = () => {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,6 +16,42 @@ const CosmosSpacesAd = () => {
           />
         </div>
       </div>
+    </div>
+  );
+};
+
+export default CosmosSpacesAd;
+*/
+
+import React, { useState, useEffect } from 'react';
+
+const CosmosSpacesAd = () => {
+  const [iframeUrl, setIFrame] = useState('');
+  useEffect(() => {
+    const run = async () => {
+      try {
+        const req = await fetch('http://app.gmosher.org:8080/adurl', {
+          method: 'GET',
+        });
+        const res: { url: string } = await req.json();
+        if (!res?.url) throw new Error('Response should be {url: string}');
+        setIFrame(res.url);
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error(e.message);
+        } else {
+          console.error(e);
+        }
+        setIFrame(
+          `https://assets-gmosher.s3.us-east-2.amazonaws.com/ad_defaultcs.html`
+        );
+      }
+    };
+    run();
+  }, []);
+  return (
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 items-center">
+      <iframe width="1000" src={iframeUrl} />
     </div>
   );
 };
